@@ -18,7 +18,7 @@ while casa == False:
 
 
 while casa == True :
-    resposta = input("\nOpções: \n-Ligar/Desligar Luz; \n-Ligar-Desligar Ar; \n-Sair de Casa\n").lower()
+    resposta = input("\nOpções: \n-Ligar/Desligar Luz; \n-Abrir/Fechar Janela; \n-Ligar/Desligar Ar; \n-Sair de Casa\n").lower()
 
     # Ligar as Luzes e Redundância
     if resposta == "ligar luz" and Luz == True:
@@ -70,4 +70,5 @@ while casa == True :
 
     # Qualquer outra resposta vai gerar uma Divergencia
     else :
+
         print("\nUma DIVERGENCIA foi detectada!!! \nEscolha uma das opções já definidas")
