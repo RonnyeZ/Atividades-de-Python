@@ -44,7 +44,7 @@ while casa == True :
     elif resposta == "abrir janela" and Ar == True:
         Janela = True
         Ar = False
-        print("\nA Janela foi aberta. O Ar-Condicionado foi Desligado\n")
+        print("\nA Janela foi aberta. \nO Ar-Condicionado foi Desligado\n")
     
     # Ligar o Ar e Redundância
     elif resposta == "ligar ar" and Ar == True and Janela == False:
@@ -72,3 +72,4 @@ while casa == True :
     else :
 
         print("\nUma DIVERGENCIA foi detectada!!! \nEscolha uma das opções já definidas")
+
