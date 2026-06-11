@@ -111,9 +111,7 @@ def identificar_linguagem(codigo):
         for padrao in padroes:
 
             # re.search verifica se o padrão aparece no código.
-            # re.MULTILINE permite que o símbolo ^ funcione no início de cada linha.
             # Neste projeto, a função normalmente recebe uma linha por vez,
-            # mas o MULTILINE deixa o analisador mais flexível.
             if re.search(padrao, codigo, re.MULTILINE):
                 pontos += 1
 
