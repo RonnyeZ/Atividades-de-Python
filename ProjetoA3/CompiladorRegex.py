@@ -2,20 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 import re
 
+
 """
-PROJETO: Identificador de Linguagem de Programação
-
-Este programa simula uma etapa inicial de um compilador: a análise léxica.
-Ele recebe um trecho de código e usa expressões regulares, Regex, para
-identificar padrões característicos de algumas linguagens de programação.
-
-O código não compila de verdade, ou seja, não gera código de máquina.
-Ele apenas analisa o texto e classifica qual linguagem parece mais provável.
+==================================================
+PARTE DO "COMPILADOR" / ANALISADOR LÉXICO
+==================================================
 """
-
-# ==================================================
-# PARTE DO "COMPILADOR" / ANALISADOR LÉXICO
-# ==================================================
 
 # Dicionário com as linguagens suportadas pelo sistema.
 # Cada linguagem possui uma lista de padrões Regex.
@@ -34,15 +26,12 @@ linguagens = {
         r'^\s*except\s+.*:',
         r'^\s*with\s+.*\s+as\s+[a-zA-Z_]\w*\s*:',
         r'^\s*return\s+.*',
-        r'^\s*#.*'
     ],
 
     "JavaScript": [
         r'^\s*function\s+[a-zA-Z_$][\w$]*\s*\(.*\)\s*\{?',
         r'^\s*console\.(?:log|error|warn)\s*\(.*\)\s*;?',
         r'^\s*(?:let|const|var)\s+[a-zA-Z_$][\w$]*',
-        r'^\s*[a-zA-Z_$][\w$]*\s*=\s*\(?.*\)?\s*=>',
-        r'=>',
         r'^\s*(?:if|while)\s*\(.*\)\s*\{?',
         r'^\s*else\s*\{?',
         r'^\s*for\s*\(.*;.*;.*\)\s*\{?',
@@ -61,10 +50,6 @@ linguagens = {
         r'^\s*(?:public|private|protected)\s+(?:static\s+)?(?:void|int|double|float|String|boolean|char|long)\s+[a-zA-Z_]\w*\s*\(',
         r'^\s*import\s+java\..*;',
         r'^\s*package\s+[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*\s*;',
-        r'^\s*new\s+[a-zA-Z_]\w*\s*\(.*\)\s*;',
-        r'^\s*Scanner\s+[a-zA-Z_]\w*\s*=',
-        r'^\s*@Override',
-        r'^\s*(?:interface|enum)\s+[a-zA-Z_]\w*'
     ],
 
     "C": [
@@ -74,10 +59,6 @@ linguagens = {
         r'^\s*(?:printf|scanf)\s*\(.*\)\s*;',
         r'^\s*(?:int|float|char|double|long)\s+[a-zA-Z_]\w*\s*=',
         r'^\s*(?:int|float|char|double|void)\s+[a-zA-Z_]\w*\s*\(.*\)\s*\{?',
-        r'^\s*struct\s+[a-zA-Z_]\w*\s*\{?',
-        r'^\s*typedef\s+struct',
-        r'^\s*[a-zA-Z_]\w*\s*\*\s*[a-zA-Z_]\w*',
-        r'^\s*(?:malloc|calloc|realloc)\s*\(.*\)',
         r'^\s*free\s*\(.*\)\s*;',
         r'^\s*return\s+0\s*;'
     ],
@@ -111,8 +92,6 @@ linguagens = {
         r'^\s*Debug\.Log\s*\(.*\)\s*;',
     ]
 }
-
-print()
 
 # Função que identifica qual linguagem mais combina
 # com o código informado pelo usuário.
