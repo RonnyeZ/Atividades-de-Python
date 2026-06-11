@@ -22,46 +22,97 @@ Ele apenas analisa o texto e classifica qual linguagem parece mais provável.
 # Esses padrões representam estruturas comuns de cada linguagem.
 linguagens = {
     "Python": [
-        r'^\s*def\s+\w+\(.*\):',
-        r'^\s*print\(.*\)',
-        r'^\s*import\s+\w+',
-        r'^\s*if\s+.*:',
-        r'^\s*for\s+\w+\s+in\s+.*:',
+        r'^\s*def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:',
+        r'^\s*class\s+[a-zA-Z_]\w*\s*:',
+        r'^\s*print\s*\(.*\)',
+        r'^\s*(?:import\s+[a-zA-Z_]\w*|from\s+[a-zA-Z_]\w*\s+import\s+.*)',
+        r'^\s*(?:if|elif)\s+.*:',
+        r'^\s*else\s*:',
+        r'^\s*for\s+[a-zA-Z_]\w*\s+in\s+.*:',
+        r'^\s*while\s+.*:',
+        r'^\s*(?:try|finally)\s*:',
+        r'^\s*except\s+.*:',
+        r'^\s*with\s+.*\s+as\s+[a-zA-Z_]\w*\s*:',
+        r'^\s*return\s+.*',
         r'^\s*#.*'
     ],
 
     "JavaScript": [
-        r'^\s*function\s+\w+\(.*\)\s*\{?',
-        r'^\s*console\.log\(.*\);?',
-        r'^\s*(let|const|var)\s+\w+',
+        r'^\s*function\s+[a-zA-Z_$][\w$]*\s*\(.*\)\s*\{?',
+        r'^\s*console\.(?:log|error|warn)\s*\(.*\)\s*;?',
+        r'^\s*(?:let|const|var)\s+[a-zA-Z_$][\w$]*',
+        r'^\s*[a-zA-Z_$][\w$]*\s*=\s*\(?.*\)?\s*=>',
         r'=>',
-        r'^\s*if\s*\(.*\)\s*\{?'
+        r'^\s*(?:if|while)\s*\(.*\)\s*\{?',
+        r'^\s*else\s*\{?',
+        r'^\s*for\s*\(.*;.*;.*\)\s*\{?',
+        r'^\s*document\.(?:getElementById|querySelector)\s*\(.*\)',
+        r'^\s*addEventListener\s*\(.*\)',
+        r'^\s*import\s+.*\s+from\s+.*;?',
+        r'^\s*export\s+default\s+.*',
+        r'^\s*class\s+[a-zA-Z_$][\w$]*\s*\{?'
     ],
 
     "Java": [
-        r'^\s*public\s+class\s+\w+',
-        r'^\s*public\s+static\s+void\s+main',
-        r'^\s*System\.out\.println\(.*\);',
-        r'^\s*(int|double|String|boolean)\s+\w+\s*=',
-        r'^\s*import\s+java\.'
+        r'^\s*(?:public|private|protected)\s+class\s+[a-zA-Z_]\w*',
+        r'^\s*public\s+static\s+void\s+main\s*\(',
+        r'^\s*System\.out\.print(?:ln)?\s*\(.*\)\s*;',
+        r'^\s*(?:int|double|float|String|boolean|char|long)\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*(?:public|private|protected)\s+(?:static\s+)?(?:void|int|double|float|String|boolean|char|long)\s+[a-zA-Z_]\w*\s*\(',
+        r'^\s*import\s+java\..*;',
+        r'^\s*package\s+[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*\s*;',
+        r'^\s*new\s+[a-zA-Z_]\w*\s*\(.*\)\s*;',
+        r'^\s*Scanner\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*@Override',
+        r'^\s*(?:interface|enum)\s+[a-zA-Z_]\w*'
     ],
 
     "C": [
-        r'^\s*#include\s*<.*>',
+        r'^\s*#include\s*<[^>]+>',
+        r'^\s*#define\s+[a-zA-Z_]\w*',
         r'^\s*int\s+main\s*\(.*\)',
-        r'^\s*printf\(.*\);',
-        r'^\s*scanf\(.*\);',
-        r'^\s*(int|float|char|double)\s+\w+\s*=',
+        r'^\s*(?:printf|scanf)\s*\(.*\)\s*;',
+        r'^\s*(?:int|float|char|double|long)\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*(?:int|float|char|double|void)\s+[a-zA-Z_]\w*\s*\(.*\)\s*\{?',
+        r'^\s*struct\s+[a-zA-Z_]\w*\s*\{?',
+        r'^\s*typedef\s+struct',
+        r'^\s*[a-zA-Z_]\w*\s*\*\s*[a-zA-Z_]\w*',
+        r'^\s*(?:malloc|calloc|realloc)\s*\(.*\)',
+        r'^\s*free\s*\(.*\)\s*;',
+        r'^\s*return\s+0\s*;'
     ],
 
     "PHP": [
         r'^\s*<\?php',
-        r'^\s*echo\s+.*;',
-        r'^\s*\$\w+',
-        r'^\s*function\s+\w+\(.*\)\s*\{',
+        r'^\s*\?>',
+        r'^\s*(?:echo|print)\s+.*;',
+        r'^\s*\$[a-zA-Z_]\w*(?:\s*=)?',
+        r'^\s*function\s+[a-zA-Z_]\w*\s*\(.*\)\s*\{',
+        r'^\s*(?:if|while)\s*\(.*\)\s*\{?',
+        r'^\s*foreach\s*\(.*\s+as\s+.*\)\s*\{?',
+        r'^\s*class\s+[a-zA-Z_]\w*',
+        r'^\s*(?:public|private|protected)\s+function\s+[a-zA-Z_]\w*\s*\(',
+        r'^\s*(?:include|require)(?:_once)?\s+[\'"].*[\'"]\s*;'
+    ],
+
+    "C#": [
+        r'^\s*using\s+(?:System|UnityEngine)\s*;',
+        r'^\s*namespace\s+[a-zA-Z_]\w*',
+        r'^\s*(?:public|private|protected)\s+class\s+[a-zA-Z_]\w*',
+        r'^\s*(?:public\s+)?static\s+void\s+Main\s*\(',
+        r'^\s*Console\.(?:WriteLine|ReadLine)\s*\(.*\)\s*;',
+        r'^\s*(?:int|float|double|string|bool|char|long)\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*var\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*(?:public|private|protected)\s+(?:static\s+)?(?:void|int|float|double|string|bool|char|long)\s+[a-zA-Z_]\w*\s*\(',
+        r'^\s*public\s+(?:int|float|double|string|bool|char|long)\s+[a-zA-Z_]\w*\s*\{',
+        r'^\s*List<.*>\s+[a-zA-Z_]\w*',
+        r'^\s*new\s+[a-zA-Z_]\w*\s*\(.*\)\s*;',
+        r'^\s*void\s+(?:Start|Update|Awake|FixedUpdate)\s*\(',
+        r'^\s*Debug\.Log\s*\(.*\)\s*;',
     ]
 }
 
+print()
 
 # Função que identifica qual linguagem mais combina
 # com o código informado pelo usuário.
@@ -120,34 +171,64 @@ def identificar_linguagem(codigo):
 # Função executada quando o botão de análise é clicado.
 def analisar():
 
-    # Captura todo o código digitado pelo usuário.
+    # Captura todo o código digitado.
     codigo = entrada_codigo.get("1.0", tk.END)
 
-    # Chama o analisador léxico.
-    resultado, pontuacao = identificar_linguagem(codigo)
+    # Divide o texto em linhas.
+    linhas = codigo.splitlines()
 
-    # Exibe o resultado principal na interface.
-    resultado_var.set(f"> RESULTADO: {resultado}")
+    # Dicionário para guardar as linhas identificadas por linguagem.
+    linhas_por_linguagem = {}
 
-    # Limpa a tabela antes de mostrar uma nova análise.
+    for linguagem in linguagens.keys():
+        linhas_por_linguagem[linguagem] = []
+
+    linhas_por_linguagem["Linguagem não identificada"] = []
+    # Analisa cada linha separadamente.
+    for linha in linhas:
+
+        if linha.strip() == "":
+            continue
+
+        resultado, pontuacao = identificar_linguagem(linha)
+
+        linhas_por_linguagem[resultado].append(linha)
+
+    # Limpa a tabela antiga.
     for item in tabela.get_children():
         tabela.delete(item)
 
-    # Insere a pontuação de cada linguagem na tabela.
-    for linguagem, pontos in pontuacao.items():
-        tabela.insert("", tk.END, values=(linguagem, pontos))
+    # Cria os itens principais da tabela.
+    for linguagem, linhas_detectadas in linhas_por_linguagem.items():
+
+        quantidade = len(linhas_detectadas)
+
+        # Item pai: nome da linguagem e quantidade.
+        item_pai = tabela.insert(
+            "",
+            tk.END,
+            values=(linguagem, quantidade),
+            open=False
+        )
+
+        # Itens filhos: linhas identificadas daquela linguagem.
+        for linha in linhas_detectadas:
+            tabela.insert(
+                item_pai,
+                tk.END,
+                values=("   " + linha, "")
+            )
+
+    resultado_var.set("> RESULTADO: ANÁLISE CONCLUÍDA")
 
 
 # Função usada para limpar a área de código e a tabela.
 def limpar():
 
-    # Apaga o código digitado.
     entrada_codigo.delete("1.0", tk.END)
 
-    # Restaura o texto inicial do resultado.
     resultado_var.set("> AGUARDANDO ENTRADA...")
 
-    # Limpa os dados da tabela.
     for item in tabela.get_children():
         tabela.delete(item)
 
@@ -158,7 +239,7 @@ def limpar():
 
 janela = tk.Tk()
 janela.title("Code Language Scanner")
-janela.geometry("900x650")
+janela.geometry("1366x768")
 janela.minsize(760, 540)
 janela.resizable(True, True)
 janela.configure(bg="#0b0f14")
@@ -166,14 +247,14 @@ janela.configure(bg="#0b0f14")
 
 def alternar_tela_cheia(event=None):
     janela.attributes("-fullscreen", not janela.attributes("-fullscreen"))
+    janela.after(100, redimensionar_canvas)
+    janela.after(200, redimensionar_canvas)
 
 
 def sair_tela_cheia(event=None):
     janela.attributes("-fullscreen", False)
-
-
-janela.bind("<F11>", alternar_tela_cheia)
-janela.bind("<Escape>", sair_tela_cheia)
+    janela.after(100, redimensionar_canvas)
+    janela.after(200, redimensionar_canvas)
 
 style = ttk.Style()
 style.theme_use("clam")
@@ -200,8 +281,68 @@ style.map(
     foreground=[("selected", "#ffffff")]
 )
 
-container = tk.Frame(janela, bg="#0b0f14")
-container.pack(fill="both", expand=True, padx=25, pady=20)
+MARGEM_X = 100
+MARGEM_Y = 20
+
+canvas = tk.Canvas(
+    janela,
+    bg="#0b0f14",
+    highlightthickness=0
+)
+
+scrollbar = ttk.Scrollbar(
+    janela,
+    orient="vertical",
+    command=canvas.yview
+)
+
+canvas.configure(yscrollcommand=scrollbar.set)
+
+canvas.pack(side="left", fill="both", expand=True)
+scrollbar.pack(side="right", fill="y")
+
+container = tk.Frame(
+    canvas,
+    bg="#0b0f14",
+    padx=MARGEM_X,
+    pady=MARGEM_Y
+)
+
+canvas_window = canvas.create_window(
+    (0, 0),
+    window=container,
+    anchor="nw"
+)
+
+
+def atualizar_scroll(event=None):
+    canvas.configure(scrollregion=canvas.bbox("all"))
+
+
+def redimensionar_canvas(event=None):
+    largura_canvas = canvas.winfo_width()
+
+    canvas.coords(canvas_window, 0, 0)
+    canvas.itemconfig(canvas_window, width=largura_canvas)
+
+    atualizar_scroll()
+
+
+def scroll_mouse(event):
+    primeiro, ultimo = canvas.yview()
+
+    if event.delta > 0 and primeiro <= 0:
+        return
+
+    if event.delta < 0 and ultimo >= 1:
+        return
+
+    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+
+container.bind("<Configure>", atualizar_scroll)
+canvas.bind("<Configure>", redimensionar_canvas)
+canvas.bind_all("<MouseWheel>", scroll_mouse)
 
 titulo = tk.Label(
     container,
@@ -210,7 +351,7 @@ titulo = tk.Label(
     bg="#0b0f14",
     fg="#00ffd5"
 )
-titulo.pack(pady=(0, 5))
+titulo.pack(pady=(20, 25))
 
 subtitulo = tk.Label(
     container,
@@ -285,6 +426,7 @@ btn_limpar = tk.Button(
 )
 btn_limpar.pack(side="left", padx=6)
 
+
 resultado_var = tk.StringVar()
 resultado_var.set("> AGUARDANDO ENTRADA...")
 
@@ -297,20 +439,41 @@ label_resultado = tk.Label(
 )
 label_resultado.pack(pady=10)
 
+frame_tabela = tk.Frame(
+    container,
+    bg="#111827",
+    height=250
+)
+
+frame_tabela.pack(
+    fill="x",
+    padx=100,
+    pady=20
+)
+
+frame_tabela.pack_propagate(False)
+
+
 tabela = ttk.Treeview(
     container,
     columns=("Linguagem", "Pontos"),
-    show="headings",
+    show="tree headings",
     height=7
 )
 
-tabela.heading("Linguagem", text="LINGUAGEM")
-tabela.heading("Pontos", text="PONTUAÇÃO")
+tabela.heading("#0", text="")
+tabela.heading("Linguagem", text="LINGUAGEM / CÓDIGO")
+tabela.heading("Pontos", text="QUANTIDADE")
 
-tabela.column("Linguagem", width=350, anchor="center")
+tabela.column("#0", width=40, anchor="center")
+tabela.column("Linguagem", width=550, anchor="w")
 tabela.column("Pontos", width=180, anchor="center")
 
-tabela.pack(pady=(10, 25), fill="both", expand=True)
+tabela.pack(
+    in_=frame_tabela,
+    fill="both",
+    expand=True
+)
 
 rodape = tk.Label(
     container,
