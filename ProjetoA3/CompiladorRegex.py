@@ -14,6 +14,8 @@ PARTE DO "COMPILADOR" / ANALISADOR LÉXICO
 # Esses padrões representam estruturas comuns de cada linguagem.
 linguagens = {
     "Python": [
+        r'^\s*[a-zA-Z_]\w*\s*=\s*.*',
+        r'^\s*input\w*\s*=',
         r'^\s*def\s+[a-zA-Z_]\w*\s*\(.*\)\s*:',
         r'^\s*class\s+[a-zA-Z_]\w*\s*:',
         r'^\s*print\s*\(.*\)',
@@ -46,7 +48,7 @@ linguagens = {
         r'^\s*(?:public|private|protected)\s+class\s+[a-zA-Z_]\w*',
         r'^\s*public\s+static\s+void\s+main\s*\(',
         r'^\s*System\.out\.print(?:ln)?\s*\(.*\)\s*;',
-        r'^\s*(?:int|double|float|String|boolean|char|long)\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*(?:int|double|float|String|boolean|char|long)\s+[a-z_]\w*\s*=\s*.*;',
         r'^\s*(?:public|private|protected)\s+(?:static\s+)?(?:void|int|double|float|String|boolean|char|long)\s+[a-zA-Z_]\w*\s*\(',
         r'^\s*import\s+java\..*;',
         r'^\s*package\s+[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*\s*;',
@@ -57,8 +59,8 @@ linguagens = {
         r'^\s*#define\s+[a-zA-Z_]\w*',
         r'^\s*int\s+main\s*\(.*\)',
         r'^\s*(?:printf|scanf)\s*\(.*\)\s*;',
-        r'^\s*(?:int|float|char|double|long)\s+[a-zA-Z_]\w*\s*=',
-        r'^\s*(?:int|float|char|double|void)\s+[a-zA-Z_]\w*\s*\(.*\)\s*\{?',
+        r'^\s*(?:int|float|char|double|long)\s+[a-z_]\w*\s*=\s*.*;',
+        r'^\s*(?:int|float|char|double|void)\s+[a-z_]\w*\s*\(.*\)\s*\{?',
         r'^\s*free\s*\(.*\)\s*;',
         r'^\s*return\s+0\s*;'
     ],
@@ -67,7 +69,7 @@ linguagens = {
         r'^\s*<\?php',
         r'^\s*\?>',
         r'^\s*(?:echo|print)\s+.*;',
-        r'^\s*\$[a-zA-Z_]\w*(?:\s*=)?',
+        r'^\s*\$[a-zA-Z_]\w*\s*=\s*.*;',
         r'^\s*function\s+[a-zA-Z_]\w*\s*\(.*\)\s*\{',
         r'^\s*(?:if|while)\s*\(.*\)\s*\{?',
         r'^\s*foreach\s*\(.*\s+as\s+.*\)\s*\{?',
@@ -82,7 +84,7 @@ linguagens = {
         r'^\s*(?:public|private|protected)\s+class\s+[a-zA-Z_]\w*',
         r'^\s*(?:public\s+)?static\s+void\s+Main\s*\(',
         r'^\s*Console\.(?:WriteLine|ReadLine)\s*\(.*\)\s*;',
-        r'^\s*(?:int|float|double|string|bool|char|long)\s+[a-zA-Z_]\w*\s*=',
+        r'^\s*(?:int|float|double|string|bool|char|long)\s+[a-z_]\w*\s*=\s*.*;',
         r'^\s*var\s+[a-zA-Z_]\w*\s*=',
         r'^\s*(?:public|private|protected)\s+(?:static\s+)?(?:void|int|float|double|string|bool|char|long)\s+[a-zA-Z_]\w*\s*\(',
         r'^\s*public\s+(?:int|float|double|string|bool|char|long)\s+[a-zA-Z_]\w*\s*\{',
@@ -163,6 +165,7 @@ def analisar():
         linhas_por_linguagem[linguagem] = []
 
     linhas_por_linguagem["Linguagem não identificada"] = []
+
     # Analisa cada linha separadamente.
     for linha in linhas:
 
@@ -171,7 +174,15 @@ def analisar():
 
         resultado, pontuacao = identificar_linguagem(linha)
 
-        linhas_por_linguagem[resultado].append(linha)
+        if resultado.startswith("Ambíguo"):
+
+            linguagens_ambiguas = resultado.replace("Ambíguo: ", "").split(", ")
+
+            for linguagem in linguagens_ambiguas:
+                linhas_por_linguagem[linguagem].append(linha)
+
+        else:
+            linhas_por_linguagem[resultado].append(linha)
 
     # Limpa a tabela antiga.
     for item in tabela.get_children():
