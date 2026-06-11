@@ -5,7 +5,7 @@ import re
 
 """
 ==================================================
-PARTE DO "COMPILADOR" / ANALISADOR LÉXICO
+PARTE DO COMPILADOR / ANALISADOR LÉXICO
 ==================================================
 """
 
