@@ -95,85 +95,86 @@ linguagens = {
     ]
 }
 
-# Função que identifica qual linguagem mais combina
-# com o código informado pelo usuário.
+# Função responsável por analisar uma linha de código
+# e descobrir qual linguagem mais combina com ela.
 def identificar_linguagem(codigo):
 
-    # Dicionário que armazenará a pontuação de cada linguagem.
+    # Dicionário que guarda quantos padrões cada linguagem conseguiu reconhecer.
     pontuacao = {}
 
-    # Percorre cada linguagem cadastrada no dicionário.
+    # Percorre cada linguagem cadastrada.
     for linguagem, padroes in linguagens.items():
 
-        # Contador de pontos da linguagem atual.
         pontos = 0
 
-        # Percorre cada expressão regular daquela linguagem.
+        # Percorre os Regex da linguagem atual.
         for padrao in padroes:
 
-            # re.search procura se o padrão Regex aparece no código.
-            # O parâmetro re.MULTILINE permite analisar códigos com várias linhas,
-            # fazendo o símbolo ^ representar o início de cada linha.
+            # re.search verifica se o padrão aparece no código.
+            # re.MULTILINE permite que o símbolo ^ funcione no início de cada linha.
+            # Neste projeto, a função normalmente recebe uma linha por vez,
+            # mas o MULTILINE deixa o analisador mais flexível.
             if re.search(padrao, codigo, re.MULTILINE):
-
-                # Se o padrão for encontrado, a linguagem ganha 1 ponto.
                 pontos += 1
 
-        # Salva a pontuação final da linguagem.
+        # Salva a quantidade de padrões encontrados para aquela linguagem.
         pontuacao[linguagem] = pontos
 
-    # Descobre qual foi a maior pontuação obtida.
+    # Pega a maior pontuação obtida entre todas as linguagens.
     maior_pontuacao = max(pontuacao.values())
 
-    # Se nenhuma linguagem marcou pontos,
-    # o sistema considera que não conseguiu identificar.
+    # Se nenhuma linguagem marcou ponto, a linha não foi reconhecida.
     if maior_pontuacao == 0:
         return "Linguagem não identificada", pontuacao
 
-    # Lista para guardar linguagens que tiveram a maior pontuação.
+    # Guarda todas as linguagens que tiveram a maior pontuação.
     provaveis = []
 
-    # Verifica se uma ou mais linguagens empataram na maior pontuação.
     for linguagem, pontos in pontuacao.items():
         if pontos == maior_pontuacao:
             provaveis.append(linguagem)
 
-    # Se apenas uma linguagem teve a maior pontuação,
-    # ela é retornada como resultado final.
+    # Se só uma linguagem venceu, retorna ela.
     if len(provaveis) == 1:
         return provaveis[0], pontuacao
 
-    # Se mais de uma linguagem teve a mesma pontuação,
-    # o resultado é considerado ambíguo.
+    # Se mais de uma linguagem empatou, retorna todas como ambíguas.
     else:
         return "Ambíguo: " + ", ".join(provaveis), pontuacao
 
 
-# Função executada quando o botão de análise é clicado.
+# Função executada ao clicar no botão de análise.
+# Ela pega o texto completo, divide em linhas e analisa uma por uma.
 def analisar():
 
-    # Captura todo o código digitado.
     codigo = entrada_codigo.get("1.0", tk.END)
 
     # Divide o texto em linhas.
+    # Cada linha será tratada como um trecho de código separado.
     linhas = codigo.splitlines()
 
-    # Dicionário para guardar as linhas identificadas por linguagem.
+    # Dicionário que guarda quais linhas foram identificadas para cada linguagem.
     linhas_por_linguagem = {}
 
+    # Cria uma lista vazia para cada linguagem cadastrada.
     for linguagem in linguagens.keys():
         linhas_por_linguagem[linguagem] = []
 
+    # Também guarda linhas que não foram reconhecidas.
     linhas_por_linguagem["Linguagem não identificada"] = []
 
-    # Analisa cada linha separadamente.
+    # Analisa cada linha digitada.
     for linha in linhas:
 
+        # Ignora linhas vazias.
         if linha.strip() == "":
             continue
 
+        # Identifica a linguagem mais provável da linha.
         resultado, pontuacao = identificar_linguagem(linha)
 
+        # Se a linha for ambígua, ela será adicionada
+        # em todas as linguagens que empataram.
         if resultado.startswith("Ambíguo"):
 
             linguagens_ambiguas = resultado.replace("Ambíguo: ", "").split(", ")
@@ -181,19 +182,21 @@ def analisar():
             for linguagem in linguagens_ambiguas:
                 linhas_por_linguagem[linguagem].append(linha)
 
+        # Se não houver ambiguidade, a linha vai somente
+        # para a linguagem identificada.
         else:
             linhas_por_linguagem[resultado].append(linha)
 
-    # Limpa a tabela antiga.
+    # Limpa os resultados antigos da tabela.
     for item in tabela.get_children():
         tabela.delete(item)
 
-    # Cria os itens principais da tabela.
+    # Preenche a tabela com itens expansíveis.
     for linguagem, linhas_detectadas in linhas_por_linguagem.items():
 
         quantidade = len(linhas_detectadas)
 
-        # Item pai: nome da linguagem e quantidade.
+        # Item pai: mostra o nome da linguagem e a quantidade de linhas detectadas.
         item_pai = tabela.insert(
             "",
             tk.END,
@@ -201,7 +204,8 @@ def analisar():
             open=False
         )
 
-        # Itens filhos: linhas identificadas daquela linguagem.
+        # Itens filhos: aparecem quando o usuário expande a linguagem.
+        # Eles mostram quais linhas foram classificadas naquela linguagem.
         for linha in linhas_detectadas:
             tabela.insert(
                 item_pai,
@@ -212,7 +216,7 @@ def analisar():
     resultado_var.set("> RESULTADO: ANÁLISE CONCLUÍDA")
 
 
-# Função usada para limpar a área de código e a tabela.
+# Função usada para limpar o campo de entrada e a tabela de resultados.
 def limpar():
 
     entrada_codigo.delete("1.0", tk.END)
